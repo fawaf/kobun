@@ -1,40 +1,56 @@
 {
     "servers": {
-        "irc.freenode.net:6667": {
-            "nick": "Kobun2",
+        "irc.example.net:6667": {
+            "nick": "kobun",
             "user": "kobun",
-            "realname": "rfw",
+            "realname": "kobun",
             "channels": [
-                "#kobun2"
+                "#channel",
+                "#channel2"
             ],
             "admins": [
-                "rfw_?!.*@unaffiliated/rofflwaffls"
+                "nick!user@host"
             ]
         }
     },
 
     "services": [
-        "8ball.py",
-        "autojoin.py",
-        "baidu.py",
-        "brain.py",
-        "cannedreplies.py",
-        "colonjavacolon.py",
-        "decide.py",
-        "logger.py",
-        "gay.py",
-        "google.py",
-        "googleimages.py",
-        "quotes.py",
-        "sepples.py",
-        "title.py",
-        "wolframalpha.py",
-        "whatthecommit.py",
-        "sux.py",
-        "zor.py"
+        "8ball",
+        "autojoin",
+        "baidu",
+        "benis",
+        "blasphemy",
+        "brain",
+        "butt",
+        "cannedreplies",
+        "colonjavacolon",
+        "decide",
+        "derpjs",
+        "gay",
+        "google",
+        "googleimages",
+        "kedo",
+        "lereddit",
+        "logger",
+        "loud",
+        "mueval",
+        "quotes",
+        "regex",
+        "rottentomatoes",
+        "sepples",
+        "shithnsays",
+        "shitvndevssay",
+        "sux",
+        "title",
+        "translate",
+        "tts",
+        "urafaget",
+        "whatthecommit",
+        "wolframalpha",
+        "zor",
     ],
 
+    "rottentomatoes.apikey": "APPID GOES HERE",
     "wolframalpha.appid": "APPID GOES HERE",
     "logger.file": "kobun.log"
 }
-
