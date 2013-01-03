@@ -50,7 +50,7 @@
         "zor",
     ],
 
-    "rottentomatoes.apikey": "APPID GOES HERE",
+    "rottentomatoes.apikey": "API KEY GOES HERE",
     "wolframalpha.appid": "APPID GOES HERE",
     "logger.file": "kobun.log"
 }
