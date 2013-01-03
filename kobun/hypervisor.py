@@ -315,6 +315,27 @@ class Hypervisor(object):
                             target,
                             "Reload complete."
                         )
+
+                    elif params[0].lower() == "stop":
+			log.info("Unloading all services")
+			irc_client.send_msg(
+			    target,
+			    "Unloading all services"
+			)
+                        for service in self.service_clients.keys():
+                            self.unload_service(service)
+			log.info("Unload complete")
+			irc_client.send_msg(
+			    target,
+			    "Unload complete"
+			)
+
+                        irc_client.send_msg(
+                            target,
+                            "Stopping kobun"
+                        )
+			log.info("Stopping kobun")
+			os.execl("/bin/true", "none")
             else:
                 irc_client.send_msg(
                     target,
