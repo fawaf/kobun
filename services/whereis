@@ -23,7 +23,7 @@ subnets = [ (x[1].split("/"), x[2][2:]) for x in filter(lambda x: len(x) == 3, [
 longsubnets = [ (quadToLong(x[0]), int(x[1]), y) for x, y in subnets ]
 longsubnets.sort(key=itemgetter(1), reverse=True)
 longsubnets = [ (x, (0xFFFFFFFF << (32 - int(y))) & 0xFFFFFFFF, z) for x, y, z in longsubnets ]
-longsubnets = [ (x & y, y, z) for x, y, z in longsubnets]
+longsubnets = [ (x & y, y, z) for x, y, z in longsubnets ]
 
 def findsubnet(ip):
     ip = quadToLong(socket.gethostbyname(ip))
