@@ -1,0 +1,139 @@
+#!/usr/bin/env python
+# encoding: utf8
+
+from kobunsupport import load_config, handshake, read_line, write_line
+import cookielib, urllib, urllib2, re, time
+
+handshake("rt")
+
+config = load_config()
+
+COMMAND_EXPR = re.compile("!rt (?P<command>t(?:icket)?|s(?:earch)?|last10|help)(?: (?P<args>.*))?")
+INLINE_MENTION_EXPR = re.compile("(?:RT|rt)#(\d+)")
+RT_ENDPOINT = "https://rt.ocf.berkeley.edu/t/{num}"
+MAX_RESULTS = 10
+MIN_NOTIFY = 3
+
+def read(uri):
+  access_user = 'ircbot'
+  access_password = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'       
+       
+  # trying login on rt server
+  cj = cookielib.LWPCookieJar()
+  opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+  urllib2.install_opener(opener)
+  data = {'user': access_user, 'pass': access_password}
+  ldata = urllib.urlencode(data)
+  login = urllib2.Request(uri, ldata)
+  try:
+    response = urllib2.urlopen(login).read()
+    return response
+  except urllib2.URLError:
+    return ""
+
+def get(num):
+  try:
+    int(num)
+  except ValueError:
+    return "That's not numeric."
+
+  uri = "https://rt.ocf.berkeley.edu/REST/1.0/ticket/{num}/show".format(num = num)
+
+  response = read(uri)
+  if response == "":
+    return "Communication error"
+  if "does not exist" in response:
+    return "Ticket {num}: No such ticket".format(num = num)
+  m = re.findall("((?:Queue|Owner|Creator|Subject|Status):.*)", response)
+  fields = [_.split(": ", 1)[1] for _ in m]
+  return "Ticket {num}: {status} {url}".format(num = num, status = "/".join(fields), url = RT_ENDPOINT.format(num = num))
+
+def last(how_many):
+  weeks_ago = time.strftime("%Y-%m-%d", time.gmtime(time.time() - 14 * 60 * 60 * 24))
+  query = "raw id != 0 and LastUpdated > '{t}' and (Status = 'new' or Status = 'open' or Status = 'stalled')".format(t = weeks_ago)
+  results = search_full(query)
+  return results[1:min(len(results), how_many + 1)]
+
+def search_full(what):
+  statusen = ["new", "open", "stalled"]
+  if what is not None and len(what.split(" ")) > 1 and what.split(" ")[0] == "all":
+    statusen.append("resolved")
+
+  status_query = " OR ".join(map(lambda _: "Status = '" + _ + "'", statusen))
+  uri = "https://rt.ocf.berkeley.edu/REST/1.0/search/ticket?" + urllib.urlencode({"query": "Content = '{what}' and ({status_query})".format(what = what, status_query = status_query), "orderby": "-Created"})
+
+  if what is not None and len(what.split(" ")) > 1 and what.split(" ")[0] == "raw":
+    uri = "https://rt.ocf.berkeley.edu/REST/1.0/search/ticket?" + urllib.urlencode({"query": " ".join(what.split(" ")[1:]), "orderby": "-Created"})
+
+  response = read(uri)
+
+  if response == "":
+    return ["Communication error"]
+
+  if "No matching results" in response:
+    return ["Search '{what}': No search results".format(what = what)]
+
+  m = re.findall("((?:\d+):.*)", response)
+  results = [_.split(": ")[0] for _ in m]
+
+  if len(results) > MAX_RESULTS:
+    out = ["Only showing {max} of {total} results".format(max = MAX_RESULTS, total = len(results))]
+  else:
+    out = []
+
+  for ticket in results[:min(len(results), MAX_RESULTS)]:
+    out.append(get(ticket))
+
+  if len(results) > MIN_NOTIFY:
+    out.append("End of results")
+
+  return out
+
+while True: 
+    server, prefix, command, args = read_line()
+
+    if command.lower() == "privmsg":
+        target, msg = args
+
+        match = COMMAND_EXPR.match(msg)
+        inline_match = INLINE_MENTION_EXPR.findall(msg)
+
+        if inline_match is not []:
+            for num in inline_match:
+                out = get(num)
+                write_line(server, "PRIVMSG", [target, out])
+
+        if match is not None:
+          command = match.group("command")
+          args = match.group("args")
+
+          if args:
+              args = args.strip()
+
+          if command in ["t", "ticket"]:
+              out = get(args)
+              write_line(server, "PRIVMSG", [target, out])
+
+          elif command in ["s", "search"]:
+              out = search_full(args)
+              for l in out:
+                  write_line(server, "PRIVMSG", [target, l])
+
+          elif command == "last10":
+              out = last(10)
+              for l in out:
+                  write_line(server, "PRIVMSG", [target, l])
+
+          elif command == "last":
+              out = last(args)
+              for l in out:
+                  write_line(server, "PRIVMSG", [target, l])
+
+          elif command == "help":
+              msg = ["!rt (t|ticket) <num>: Look up ticket details", 
+                  "!rt (s|search) (all) <string>: Search fulltext (search all for resolved tickets too)",
+                  "!rt last10: Show last 10 created tickets",
+                  "!rt last <num>: Show last <num> created tickets",
+                  "List format: queue/owner/requestor/subject/status url"]
+              for l in msg:
+                  write_line(server, "PRIVMSG", [target, l])
