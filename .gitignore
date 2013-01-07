@@ -1,6 +1,5 @@
 *.pyc
 *.db
 *.json
-!config.json.dist
 *.log
-
+!config.json.dist
