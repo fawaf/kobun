@@ -12,8 +12,11 @@ def handshake(info):
     sys.stdout.flush()
 
 def read_line():
-    server, raw_line = sys.stdin.readline().rstrip("\r\n").split(" ", 1)
-    prefix, command, args = irc.parse_line(raw_line)
+    try:
+        server, raw_line = sys.stdin.readline().rstrip("\r\n").split(" ", 1)
+        prefix, command, args = irc.parse_line(raw_line)
+    except ValueError:
+        sys.exit()
     return server, prefix, command, args
 
 def write_line(server, command, args):
