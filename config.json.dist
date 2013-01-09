@@ -51,6 +51,6 @@
     ],
 
     "rottentomatoes.apikey": "API KEY GOES HERE",
-    "wolframalpha.appid": "APPID GOES HERE",
+    "wolframalpha.appid": "APP ID GOES HERE",
     "logger.file": "kobun.log"
 }
