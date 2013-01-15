@@ -8,7 +8,7 @@ handshake("rt")
 
 config = load_config()
 
-COMMAND_EXPR = re.compile("!rt (?P<command>t(?:icket)?|s(?:earch)?|last10|help)(?: (?P<args>.*))?")
+COMMAND_EXPR = re.compile("!rt (?P<command>t(?:icket)?|s(?:earch)?|last10|last|help)(?: (?P<args>.*))?")
 INLINE_MENTION_EXPR = re.compile("(?:RT|rt)#(\d+)")
 RT_ENDPOINT = "https://rt.ocf.berkeley.edu/t/{num}"
 MAX_RESULTS = 10
@@ -33,7 +33,7 @@ def read(uri):
 
 def get(num):
   try:
-    int(num)
+    num = int(num)
   except ValueError:
     return "That's not numeric."
 
@@ -49,6 +49,11 @@ def get(num):
   return "Ticket {num}: {status} {url}".format(num = num, status = "/".join(fields), url = RT_ENDPOINT.format(num = num))
 
 def last(how_many):
+  try:
+    how_many = int(how_many)
+  except ValueError:
+    return "That's not numeric."
+
   weeks_ago = time.strftime("%Y-%m-%d", time.gmtime(time.time() - 14 * 60 * 60 * 24))
   query = "raw id != 0 and LastUpdated > '{t}' and (Status = 'new' or Status = 'open' or Status = 'stalled')".format(t = weeks_ago)
   results = search_full(query)
@@ -100,6 +105,7 @@ while True:
 
         if inline_match is not []:
             for num in inline_match:
+                time.sleep(0.3)
                 out = get(num)
                 write_line(server, "PRIVMSG", [target, out])
 
@@ -117,16 +123,19 @@ while True:
           elif command in ["s", "search"]:
               out = search_full(args)
               for l in out:
+                  time.sleep(0.3)
                   write_line(server, "PRIVMSG", [target, l])
 
           elif command == "last10":
               out = last(10)
               for l in out:
+                  time.sleep(0.3)
                   write_line(server, "PRIVMSG", [target, l])
 
           elif command == "last":
               out = last(args)
               for l in out:
+                  time.sleep(0.3)
                   write_line(server, "PRIVMSG", [target, l])
 
           elif command == "help":
@@ -136,4 +145,5 @@ while True:
                   "!rt last <num>: Show last <num> created tickets",
                   "List format: queue/owner/requestor/subject/status url"]
               for l in msg:
+                  time.sleep(0.3)
                   write_line(server, "PRIVMSG", [target, l])
