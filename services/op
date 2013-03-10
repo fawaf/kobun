@@ -19,4 +19,4 @@ while True:
     parts = msg.split(' ', 1)
 
     if parts[0] == '!op':
-      write_line(server, "MODE", [target, "+o", parts[1]])
+      write_line(server, "MODE", [target, "+o", parts[1].strip()])
