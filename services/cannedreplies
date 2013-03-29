@@ -11,10 +11,11 @@ config = load_config()
 
 
 RESPONSES = {
-    "gface":    u"( ≖‿≖)",
-    "cool":     u"COOL LIKE SNOWMAN ☃",
-    "chownface":u"( ´· ‿ ·`)",
-    "le-spj-face.jpg": "http://dl.dropbox.com/u/2880866/le-spj-face.jpg",
+    "gface":             u"( ≖‿≖)",
+    "cool":              u"COOL LIKE SNOWMAN ☃",
+    "chownface":         u"( ´· ‿ ·`)",
+    "moe?":              u"kyun!",
+    "le-spj-face.jpg":   "http://dl.dropbox.com/u/2880866/le-spj-face.jpg",
     "le-kobun-face.jpg": "http://dl.dropbox.com/u/2880866/le-kobun-face.jpg",
     "http://25.media.tumblr.com/tumblr_m5n4y9l4mw1ryt8iao4_1280.jpg": "NuclearPoweredKimJongIl is a faggot."
 }
@@ -32,4 +33,3 @@ while True:
 
         if cands:
             write_line(server, "PRIVMSG", [target, random.choice(cands).encode("utf-8")])
-
