@@ -9,7 +9,7 @@ handshake("rt")
 config = load_config()
 
 COMMAND_EXPR = re.compile("!rt (?P<command>t(?:icket)?|s(?:earch)?|last10|last|help)(?: (?P<args>.*))?")
-INLINE_MENTION_EXPR = re.compile("(?:RT|rt)#(\d+)")
+INLINE_MENTION_EXPR = re.compile("(?:RT|rt)\s?#(\d+)")
 RT_ENDPOINT = "https://rt.ocf.berkeley.edu/t/{num}"
 MAX_RESULTS = 10
 MIN_NOTIFY = 3
