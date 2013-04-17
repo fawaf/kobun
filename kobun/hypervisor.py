@@ -81,6 +81,7 @@ class HypervisedService(object):
 
 class Hypervisor(object):
     RC_EXPR = re.compile("!hypervisor(?: (?P<params>.*))?")
+    VER_EXPR = re.compile(".*VERSION.*")
 
     def __init__(self, config_fn):
         self.config_fn = config_fn
@@ -163,11 +164,15 @@ class Hypervisor(object):
                 self.load_service(service.fn)
 
     def on_privmsg(self, irc_client, prefix, target, message):
-        if not any(re.match(admin_expr, prefix) for admin_expr in self.config["servers"][irc_client.server]["admins"]):
-            return
-
         if target[0] != '#':
             target = prefix.split('!', 2)[0]
+
+        match = self.VER_EXPR.match(message)
+        if match:
+            irc_client.send_ctcp_response(target, "VERSION", "kobun v1.0")
+
+        if not any(re.match(admin_expr, prefix) for admin_expr in self.config["servers"][irc_client.server]["admins"]):
+            return
 
         match = self.RC_EXPR.match(message)
 

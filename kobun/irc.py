@@ -77,7 +77,7 @@ class IRCClient(object):
 
             for line in lines:
                 self.on_raw(line)
-                self.process_comamnd(parse_line(line))
+                self.process_command(parse_line(line))
 
             gevent.sleep(0)
 
@@ -89,7 +89,7 @@ class IRCClient(object):
                 self.gsock.close()
                 pass
 
-    def process_comamnd(self, line):
+    def process_command(self, line):
         log.debug("< {}".format(line))
         prefix, command, args = line
 
@@ -99,6 +99,13 @@ class IRCClient(object):
         line_raw = make_line(command, args)
         log.debug("> {}".format((command, args)))
         self.raw(line_raw)
+
+    def send_ctcp_response(self, target, ctcp_command, msg):
+        msg = "\x01" + ctcp_command + " " + msg + "\x01"
+        self.send_command("NOTICE", target, msg)
+
+    def send_notice(self, target, msg):
+        self.send_command("NOTICE", target, msg)
 
     def send_msg(self, target, msg):
         self.send_command("PRIVMSG", target, msg)
