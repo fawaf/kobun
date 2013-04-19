@@ -1,7 +1,7 @@
 kobun
 =====
 
-TODO
+Original code from [rfw](https://github.com/rfw).
 
 Installation
 ------------
