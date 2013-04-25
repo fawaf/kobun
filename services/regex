@@ -10,7 +10,7 @@ config = load_config()
 
 import re
 
-REGEX_EXPR = re.compile(r's(.)(?P<find>.*(?!\1).)\1(?P<replace>.*(?!\1).)\1?(?P<extra>\S*)$')
+REGEX_EXPR = re.compile(r's(.)(?P<find>.*(?!\1).)\1(?P<replace>.*(?!\1).)\1(?P<extra>\S*)$')
 HISTORY = {}
 
 def unixtime():
