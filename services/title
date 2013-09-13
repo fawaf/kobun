@@ -9,7 +9,7 @@ import urllib2
 import gevent
 
 from pyquery import PyQuery as pq
-from requests.packages.chardet.universaldetector import UniversalDetector
+from requests.packages.charade.universaldetector import UniversalDetector
 
 handshake("display the title of a page")
 
