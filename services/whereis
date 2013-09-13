@@ -6,6 +6,7 @@ from operator import itemgetter
 import re
 import sqlite3
 import struct, socket
+import urllib2
 
 handshake("whereis")
 
@@ -17,7 +18,9 @@ def quadToLong(ip):
     return struct.unpack('!L',socket.inet_aton(ip))[0]
 
 # parse into ([ip, prefixlength], desc)
-subnets = [ (x[1].split("/"), x[2][2:]) for x in filter(lambda x: len(x) == 3, [map(str.strip, line.strip().split("\t")) for line in filter(lambda x: x[0] != '#', open('networks.local'))]) ]
+subnets = [ (x[1].split("/"), x[2][2:]) for x in filter(lambda x: len(x) == 3,
+    [map(str.strip, line.strip().split("\t")) for line in filter(lambda x:
+        x[0] != '#', urllib2.urlopen('ftp://ftp.net.berkeley.edu/pub/networks.local'))]) ]
 
 # convert to (long_ip, subnet_mask, desc)
 longsubnets = [ (quadToLong(x[0]), int(x[1]), y) for x, y in subnets ]
