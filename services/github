@@ -6,7 +6,7 @@ import re
 import github3
 import time
 
-handshake("test")
+handshake("octocat")
 
 config = load_config()
 
