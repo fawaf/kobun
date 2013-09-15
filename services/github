@@ -1,0 +1,38 @@
+#!/usr/bin/env python2
+
+from kobunsupport import load_config, handshake, read_line, write_line
+
+import re
+import github3
+import time
+
+handshake("test")
+
+config = load_config()
+
+WHEREIS_EXPR = re.compile("!(gh|github) (?P<args>.*)")
+
+
+def get_commit_message(msg):
+    line = msg.strip().split('/')
+    OWNER = line[3]
+    REPO = line[4]
+    COMMIT = line[6]
+    message = github3.login(token=config['github.accesstoken']). \
+      repository(OWNER, REPO).commit(COMMIT).commit.message.split('\n')
+    return message
+
+while True:
+    server, prefix, command, args = read_line()
+
+    if command.lower() == "privmsg":
+        target, msg = args
+
+        match = WHEREIS_EXPR.match(msg)
+        if match is not None:
+            message = get_commit_message(msg)
+            for line in message:
+                time.sleep(0.3)
+                write_line(server, "PRIVMSG", [target, line])
+
+# encoding: utf-8
