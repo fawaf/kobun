@@ -28,7 +28,7 @@ RESPONSES = {
 #    lambda x: "cool" in x.lower():              u"COOL LIKE SNOWMAN ☃",
     lambda x: "moe?" in x.lower():              "kyun!",
     lambda x: "http://25.media.tumblr.com/tumblr_m5n4y9l4mw1ryt8iao4_1280.jpg" in x.lower(): "NuclearPoweredKimJongIl is a faggot.",
-    lambda x: "http://25.media.tumblr.com/734b4843e9fa5a70a034533081fa4a2d/tumblr_mgqb7lMEtI1qkgjnio1_1280.jpg" in x.lower(): "NuclearPoweredKimJongIl is a faggot."
+    lambda x: "http://25.media.tumblr.com/734b4843e9fa5a70a034533081fa4a2d/tumblr_mgqb7lMEtI1qkgjnio1_1280.jpg" in x.lower(): "NuclearPoweredKimJongIl is a faggot.",
     lambda x: "gface" in x.lower():             gface,
     lambda x: "edgyface" in x.lower():          u"(ケ≖‿≖)ケ",
 #    lambda x: "cool" in x.lower():              u"COOL LIKE BANANA 🍌 ",

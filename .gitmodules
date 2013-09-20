@@ -1,0 +1,6 @@
+[submodule "jsomeglirc"]
+	path = jsomeglirc
+	url = https://github.com/rfw/jsomeglirc.git
+[submodule "services/jsomeglirc"]
+	path = services/jsomeglirc
+	url = https://github.com/rfw/jsomeglirc.git
