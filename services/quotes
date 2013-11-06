@@ -21,7 +21,7 @@ conn.execute("""CREATE TABLE IF NOT EXISTS quotes(
     context VARCHAR(255)
 )""")
 
-COMMAND_EXPR = re.compile("!quote (?P<command>add|del|rand|view|read|find|web)(?: (?P<args>.*))?")
+COMMAND_EXPR = re.compile("!quote (?P<command>add|del|rand|view|read|find|search|web)(?: (?P<args>.*))?")
 
 RATE_LIMIT = {}
 RATE_LIMIT_TIME = 10
@@ -161,7 +161,7 @@ while True:
                 else:
                     qid, content = quote
                     write_line(server, "PRIVMSG", [target, "\x02Quote {}:\x02 {}".format(qid, content.encode("utf-8"))])
-            elif command == "find":
+            elif command == "find" or command == "search":
                 if not args:
                     write_line(server, "PRIVMSG", [target, "Huh?"])
                 else:
