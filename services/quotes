@@ -138,7 +138,7 @@ while True:
                             pass
                         else:
                             write_line(server, "PRIVMSG", [target, "Quote {} added.".format(qid)])
-            elif command == "del":
+            elif command == "del" or command == "delete":
                 if any(re.match(admin_expr, prefix) for admin_expr in config["servers"][server]["admins"]):
                     if delete_quote(args, target.lower()):
                         write_line(server, "PRIVMSG", [target, "Quote {} deleted.".format(args)])
