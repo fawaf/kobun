@@ -25,7 +25,7 @@ config = load_config()
 
 RESPONSES = {
 #    lambda x: "gface" in x.lower():             u"( ≖‿≖)",
-#    lambda x: "cool" in x.lower():              u"COOL LIKE SNOWMAN ☃",
+    lambda x: "cool" in x.lower():              u"COOL LIKE SNOWMAN ☃",
     lambda x: "moe?" in x.lower():              "kyun!",
     lambda x: "http://25.media.tumblr.com/tumblr_m5n4y9l4mw1ryt8iao4_1280.jpg" in x.lower(): "NuclearPoweredKimJongIl is a faggot.",
     lambda x: "http://25.media.tumblr.com/734b4843e9fa5a70a034533081fa4a2d/tumblr_mgqb7lMEtI1qkgjnio1_1280.jpg" in x.lower(): "NuclearPoweredKimJongIl is a faggot.",
@@ -42,6 +42,7 @@ RESPONSES = {
     lambda x: "lenny" in x.lower():             u"( ͡° ͜ʖ ͡°)",
     lambda x: "goface" in x.lower():            u"ʕ ◔ϖ◔ʔ",
 #    lambda x: x.strip() == "lol":               "r u havin a giggle m8?"
+#    "gface":    u"( ≖‿≖)",
 }
 
 def fuk_unicode(s):
@@ -64,3 +65,4 @@ while True:
 
         if cands:
             write_line(server, "PRIVMSG", [target, fuk_unicode(random.choice(cands))])
+            #write_line(server, "PRIVMSG", [target, random.choice(cands).encode("utf-8")])

@@ -104,6 +104,7 @@ def find_quote(like, context=None):
 
 while True:
     server, prefix, command, args = read_line()
+    nickname = config["servers"][server]["nick"]
 
     if command.lower() == "privmsg":
         nick, user, host = parse_prefix(prefix)
@@ -153,7 +154,7 @@ while True:
                     write_line(server, "PRIVMSG", [target, "\x02Quote {}:\x02 {}".format(qid, content.encode("utf-8"))])
             elif command in ("view", "read"):
                 if args.strip() == "last":
-                   quote = last_quote(target.lower())
+                   quote = last_quote()
                 else:
                     quote = view_quote(args, target.lower())
                 if quote is None:
@@ -165,7 +166,7 @@ while True:
                 if not args:
                     write_line(server, "PRIVMSG", [target, "Huh?"])
                 else:
-                    qids = find_quote(args, target.lower())
+                    qids = find_quote(args)
                     if not qids:
                         write_line(server, "PRIVMSG", [target, "No quotes found matching criteria."])
                     elif len(qids) == 1:
@@ -174,6 +175,7 @@ while True:
                     else:
                         line = "\x02{} quotes found:\x02 {}".format(len(qids), ", ".join(str(x) for x in qids))
                         if len(line) >= 450:
-                            write_line(server, "PRIVMSG", [target,  "\x02{} quotes found:\x02 (too many to list)".format(len(qids))])
+                            write_line(server, "PRIVMSG", [target,  "\x02{} quotes found:\x02 http://thor.rfw.name/wut/?{}".format(len(qids), urllib.urlencode({'q': args}))]) 
                         else:
                             write_line(server, "PRIVMSG", [target, line])
+

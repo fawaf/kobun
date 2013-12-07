@@ -34,7 +34,7 @@ def worker(server, target, url):
         write_line(server, "PRIVMSG", [target, "\x02Content Type:\x02 {}".format(content_type)])
     else:
         try:
-            r = requests.get(url)
+            r = requests.get(url, headers=headers)
             try: # XXX: DIRTY HORRIBLE BUT WORKING HACK (ALSO REQUESTS IS DUM)
                 if r.encoding == "ISO-8859-1":
                     u = UniversalDetector()
