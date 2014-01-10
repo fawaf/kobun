@@ -1,17 +1,17 @@
 #!/usr/bin/env python2
 # -*- encoding: utf-8 -*-
 
+import gevent
+
 from kobunsupport import load_config, handshake, read_line, write_line
 from tweepy.streaming import StreamListener
-from tweepy import OAuthHandler, Stream
+from tweepy import OAuthHandler, Stream, API
 
 handshake("Now with 20% more faggotry!")
 
 config = load_config()
-consumer_key = config['twitter.key']
-consumer_secret = config['twitter.secret']
-access_token = config['twitter.token']
-access_token_secret = config['twitter.token_secret']
+auth = OAuthHandler(config['twitter.key'], config['twitter.secret'])
+auth.set_access_token(config['twitter.token'], config['twitter.token_secret'])
 
 class KobunTwitterListener(StreamListener):
     def __init__(self, write_line_fn):
@@ -28,16 +28,35 @@ class KobunTwitterListener(StreamListener):
         text = text.format(status)
         self.announce(text.encode('utf-8'))
 
+tweet_stream = None
+tweet_target = None
+
 while True:
     server, prefix, command, args = read_line()
 
     if command.lower() == "privmsg":
         target, msg = args
-        if msg == '!twitter':
-            write_line(server, "PRIVMSG", [target, "Now streaming tweets to \x02{}\x02! Unload module to stop.".format(target)])
+        parts = msg.split(" ", 1)
 
-            ktl = KobunTwitterListener(lambda x: write_line(server, "PRIVMSG", [target, x]))
-            auth = OAuthHandler(consumer_key, consumer_secret)
-            auth.set_access_token(access_token, access_token_secret)
-            stream = Stream(auth, ktl)
-            stream.userstream()
+        if msg == '!twitter':
+            if tweet_stream is not None:
+                write_line(server, "PRIVMSG", [target, "\x02twitter:\x02 Already streaming tweets!"])
+                continue
+
+            tweet_target = target
+            ktl = KobunTwitterListener(lambda x: write_line(server, "PRIVMSG", [tweet_target, x]))
+            tweet_stream = Stream(auth, ktl)
+            tweet_stream.userstream(async=True)
+
+            write_line(server, "PRIVMSG", [target, "\x02twitter:\x02 Now streaming tweets to \x02{}\x02! Use !stoptwitter to stop.".format(target)])
+        elif msg == '!stoptwitter' and tweet_stream is not None:
+            tweet_stream.disconnect()
+            tweet_stream = None
+            tweet_target = None
+            write_line(server, "PRIVMSG", [target, "\x02twitter:\x02 Stream killed."])
+        elif parts[0].lower() == '!tweet' and tweet_target == target:
+            if len(parts) < 1:
+                write_line(server, "PRIVMSG", [target, "\x02twitter:\x02 Write your tweet, goddamnit."])
+                continue
+
+            API(auth).update_status(parts[1])
