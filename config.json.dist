@@ -53,6 +53,10 @@
     "rottentomatoes.apikey": "API KEY GOES HERE",
     "wolframalpha.appid": "APP ID GOES HERE",
     "github.accesstoken": "ACCESS TOKEN GOES HERE",
+    "twitter.key": "KEY GOES HERE",
+    "twitter.secret": "SECRET GOES HERE",
+    "twitter.token": "TOKEN GOES HERE",
+    "twitter.token_secret": "TOKEN SECRET GOES HERE",
 
     "logger.file": "kobun.log"
 }
