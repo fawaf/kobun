@@ -37,4 +37,3 @@ def core():
         gevent.sleep(0)
 
 gevent.spawn(core).join()
-
