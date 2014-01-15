@@ -1,8 +1,6 @@
 #!/usr/bin/env python2
 # -*- encoding: utf-8 -*-
 
-import gevent
-
 from kobunsupport import load_config, handshake, read_line, write_line
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler, Stream, API
@@ -19,14 +17,17 @@ class KobunTwitterListener(StreamListener):
         self.announce = write_line_fn
 
     def on_status(self, status):
-        url_format = "(https://twitter.com/{0.user.screen_name}/status/{0.id_str})"
-        if hasattr(status, 'retweeted_status'):
-              text = u"\x02[@{0.user.screen_name} RT @{0.retweeted_status.user.screen_name}]\x02 {0.retweeted_status.text} " + url_format
-        else:
-              text = u"\x02[@{0.user.screen_name}]\x02 {0.text} " + url_format
+        try:
+            url_format = "(https://twitter.com/{0.user.screen_name}/status/{0.id_str})"
+            if hasattr(status, 'retweeted_status'):
+                text = u"\x02[@{0.user.screen_name} RT @{0.retweeted_status.user.screen_name}]\x02 {0.retweeted_status.text} " + url_format
+            else:
+                text = u"\x02[@{0.user.screen_name}]\x02 {0.text} " + url_format
 
-        text = text.format(status)
-        self.announce(text.encode('utf-8'))
+            text = text.format(status)
+            self.announce(text.encode('utf-8'))
+        except AttributeError:
+            pass
 
 tweet_stream = None
 tweet_target = None
@@ -44,7 +45,7 @@ while True:
                 continue
 
             tweet_target = target
-            ktl = KobunTwitterListener(lambda x: write_line(server, "PRIVMSG", [tweet_target, x]))
+            ktl = KobunTwitterListener(lambda text: [write_line(server, "PRIVMSG", [tweet_target, line]) for line in text.splitlines() if line])
             tweet_stream = Stream(auth, ktl)
             tweet_stream.userstream(async=True)
 
@@ -55,8 +56,20 @@ while True:
             tweet_target = None
             write_line(server, "PRIVMSG", [target, "\x02twitter:\x02 Stream killed."])
         elif parts[0].lower() == '!tweet' and tweet_target == target:
-            if len(parts) < 1:
+            if len(parts) < 2:
                 write_line(server, "PRIVMSG", [target, "\x02twitter:\x02 Write your tweet, goddamnit."])
                 continue
 
             API(auth).update_status(parts[1])
+        elif parts[0].lower() == '!reply' and tweet_target == target:
+            if len(parts) < 2:
+                write_line(server, "PRIVMSG", [target, "\x02twitter:\x02 Write your tweet, goddamnit."])
+                continue
+
+            new_parts = parts[1].split(" ", 1)
+            if len(new_parts) < 2:
+                write_line(server, "PRIVMSG", [target, "\x02twitter:\x02 Ok douchebag I need an ID AND a tweet."])
+                continue
+
+            API(auth).update_status(new_parts[1], in_reply_to_status_id=new_parts[0])
+
