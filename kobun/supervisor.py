@@ -56,8 +56,9 @@ class SupervisedService(object):
 
     def monitor(self):
         self.greenlet = gevent.getcurrent()
+        send_line = True
 
-        while True:
+        while send_line:
 #            gevent.socket.wait_read(self.proc.stdout.fileno())
             send_line = self.proc.stdout.readline()
             try:
@@ -65,7 +66,7 @@ class SupervisedService(object):
                 self.proc.stdout.flush()
                 self.supervisor.irc_clients[server].raw(raw_line[:1000])
             except (ValueError, KeyError):
-                log.warning("{} sent bad line: {}", self.fn, send_line)
+                log.warning("{} sent bad line: {}".format(self.fn, send_line))
 
     def start(self):
         g = gevent.spawn(self.handshake)
